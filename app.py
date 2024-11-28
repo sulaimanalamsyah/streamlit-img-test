@@ -3,6 +3,27 @@ import numpy as np
 import cv2
 import rasterio
 import matplotlib.pyplot as plt
+from rasterio.plot import show
+
+# tambahan
+def agriculture_image_raw(b11, b8, b2):
+    """Display RGB image composed of three bands."""
+    rgb_image = np.dstack((b11, b8, b2))
+    rgb_image_normalized = cv2.normalize(rgb_image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    plt.imshow(rgb_image_normalized)
+    plt.axis('off')
+    plt.title('Agriculture Composite Image')
+    plt.colorbar()
+
+def image_raw(b1, b2, b3):
+    """Display RGB image composed of three bands."""
+    rgb_image = np.dstack((b1, b2, b3))
+    rgb_image_normalized = cv2.normalize(rgb_image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    plt.imshow(rgb_image_normalized)
+    plt.axis('off')
+    plt.title('Raw Composite Image')
+    plt.colorbar()
+
 
 def display_image(band_data, band_index):
     """Display a single band image."""
@@ -34,6 +55,7 @@ def main():
             st.write("**Image Dimensions:**", src.width, "x", src.height)
             st.write("**Number of Bands:**", src.count)
             st.write("**Coordinate Reference System:**", src.crs)
+            st.write("**Pixel:**",)
 
             # Visualize Each Band
             st.write("**Band Visualizations:**")
@@ -46,19 +68,45 @@ def main():
                 display_image(band, i)
                 st.pyplot(fig)
 
+
             # Check if there are at least 3 bands for RGB
             if src.count >= 3:
-                r = src.read(1)  # Red
-                g = src.read(2)  # Green
-                b = src.read(3)  # Blue
+                r = src.read(4)  # Red
+                g = src.read(3)  # Green
+                b = src.read(2)  # Blue
+
+                #show raw photo
+                # Display RGB Composite Image
+                st.subheader('RAW Composite Image')
+                fig_rgb, ax_rgb = plt.subplots()
+                image_raw(src.read(1), src.read(2), src.read(3))
+                st.pyplot(fig_rgb)
 
                 # Display RGB Composite Image
                 st.subheader('RGB Composite Image')
                 fig_rgb, ax_rgb = plt.subplots()
                 display_rgb_image(r, g, b)
                 st.pyplot(fig_rgb)
+
+                
             else:
                 st.warning("This image does not contain enough bands for RGB visualization.")
+
+            # Check if there are at least 3 bands for Agriculture
+            # Check if there are at least 3 bands for RGB
+            if src.count >= 11:
+                r = src.read(11)  # Red
+                g = src.read(8)  # Green
+                b = src.read(2)  # Blue
+
+                # Display RGB Composite Image
+                st.subheader('Agriculture Composite Image')
+                fig_rgb, ax_rgb = plt.subplots()
+                agriculture_image_raw(r, g, b)
+                st.pyplot(fig_rgb)
+            else:
+                st.warning("This image does not contain enough bands for Agriculture visualization.")
+
 
 if __name__ == "__main__":
     main()
