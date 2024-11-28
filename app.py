@@ -55,7 +55,7 @@ def main():
             st.write("**Image Dimensions:**", src.width, "x", src.height)
             st.write("**Number of Bands:**", src.count)
             st.write("**Coordinate Reference System:**", src.crs)
-            st.write("**Pixel:**",)
+            st.write("**Pixel:**", src.read(1))
 
             # Visualize Each Band
             st.write("**Band Visualizations:**")
